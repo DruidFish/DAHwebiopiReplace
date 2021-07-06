@@ -16,7 +16,6 @@ class DS18B20:
     if not os.path.exists( self.path ):
       raise FileNotFoundError( "DS18B20 says: could not find sensor with address " + str(address) )
 
-
   def getCelsius(self):
 
     # Load the raw temperature data

@@ -16,43 +16,42 @@ class PCF8574:
     self.bus = smbus.SMBus(1)
     self.address = address
 
-
   def portRead(self):
 
     return self.bus.read_byte(self.address)
 
-
   def portWrite(self, value):
+
+    if portWrite < 0 or portWrite > 255:
+      raise ValueError('PCF8574 says: Invalid portWrite value (' + str(value) + ')! Options are 0-255')
 
     self.bus.write_byte(self.address, value)
 
+  def digitalWrite(self, channel, value):
 
-  def digitalWrite(self, pin, value):
-
-    if pin < 0 or pin > 7:
-      raise ValueError('PCF8574 says: Invalid pin chosen (' + str(pin) +')! Options are 0-7')
+    if channel < 0 or channel > 7:
+      raise ValueError('PCF8574 says: Invalid channel chosen (' + str(channel) +')! Options are 0-7')
 
     currentState = self.portRead()
 
-    # Zero the relevant pin
-    newState = currentState & ~( 1 << pin )
+    # Zero the relevant channel
+    newState = currentState & ~( 1 << channel )
 
-    # Set the pin high if requested
+    # Set the channel high if requested
     if value:
-      newState += ( 1 << pin )
+      newState += ( 1 << channel )
 
     self.portWrite( newState )
 
+  def digitalRead(self, channel):
 
-  def digitalRead(self, pin):
-
-    if pin < 0 or pin > 7:
-      raise ValueError('PCF8574 says: Invalid pin chosen (' + str(pin) +')! Options are 0-7')
+    if channel < 0 or channel > 7:
+      raise ValueError('PCF8574 says: Invalid channel chosen (' + str(channel) +')! Options are 0-7')
 
     currentState = self.portRead()
 
-    # Mask all other pins
-    pinState = currentState & ( 1 << pin )
+    # Mask all other channels
+    channelState = currentState & ( 1 << channel )
 
     # Return a boolean
-    return ( pinState > 0 )
+    return ( channelState > 0 )

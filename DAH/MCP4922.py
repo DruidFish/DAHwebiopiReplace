@@ -10,9 +10,12 @@ Based on https://github.com/mrwunderbar666/Python-RPi-MCP4922
 import spidev
 import RPi.GPIO as GPIO
 
-class MCP4922(object):
+class MCP4922:
 
-  def __init__(self, chip=1):
+  def __init__(self, chip=1, vref=3.3):
+
+    # Reference voltage
+    self.vref = vref
 
     # Use the spidev library for communication
     self.spi = spidev.SpiDev(0, 1)
@@ -27,7 +30,7 @@ class MCP4922(object):
     elif chip == 1:
       self.cs = 7
     else:
-      raise ValueError('MCP4922 says: Invalid CS chosen (' + str(chip) + '! Options are 0 or 1')
+      raise ValueError('MCP4922 says: Invalid chip chosen (' + str(chip) + ')! Options are 0 or 1')
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(self.cs, GPIO.OUT)
@@ -35,11 +38,34 @@ class MCP4922(object):
 
   def __del__(self):
 
-    shutdown(0)
-    shutdown(1)
-    close()
+    self.shutdown(0)
+    self.shutdown(1)
+    self.close()
 
+  def setCS(self, cs):
 
+    if cs < 0 or cs > 27:
+      raise ValueError('MCP3208 says: Invalid CS chosen (' + str(cs) + ')! Options are 0-27')
+
+    self.cs = cs
+    GPIO.setup(self.cs, GPIO.OUT)
+    GPIO.output(self.cs, 1)
+
+  def analogCount(self):
+
+    return 2
+
+  def analogResolution(self):
+
+    return 12
+
+  def analogMaximum(self):
+
+    return 4095
+
+  def analogReference(self):
+
+    return self.vref
 
   def analogWrite(self, channel, value):
 
@@ -48,7 +74,7 @@ class MCP4922(object):
     elif channel == 1:
       output = 0xb000
     else:
-      raise ValueError('MCP4922 says: Invalid channel chosen (' + str(channel) + '! Options are 0 or 1')
+      raise ValueError('MCP4922 says: Invalid channel chosen (' + str(channel) + ')! Options are 0 or 1')
 
     if value > 4095:
       value = 4095
@@ -68,6 +94,14 @@ class MCP4922(object):
     # Deactivate chip select
     GPIO.output(self.cs, 1)
 
+  def analogWriteFloat(self, channel, value):
+
+    self.analogWrite( channel, int( value * float( self.analogMaximum() ) ) )
+
+  def analogWriteVolt(self, channel, value):
+
+    self.analogWriteFloat( channel, value / self.analogReference() )
+
   def shutdown(self, channel):
 
     if channel == 0:
@@ -75,7 +109,7 @@ class MCP4922(object):
     elif channel == 1:
       output = 0xA000
     else:
-      raise ValueError('MCP4922 says: Wrong Channel Selected! Chose either 0 or 1!')
+      raise ValueError('MCP4922 says: Invalid channel chosen (' + str(channel) + ')! Options are 0 or 1')
 
     buf0 = (output >> 8) & 0xff
     buf1 = output & 0xff
@@ -90,5 +124,6 @@ class MCP4922(object):
     GPIO.output(self.cs, 1)
 
   def close(self):
-    self.spi.close
+
+    self.spi.close()
 
