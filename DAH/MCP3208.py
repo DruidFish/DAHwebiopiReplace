@@ -96,7 +96,7 @@ class MCP3208:
 
   def analogReadVolt(self, channel):
 
-    return self.vref * self.analogReadVolt( channel )
+    return self.vref * self.analogReadFloat( channel )
 
   def analogReadAll(self):
 

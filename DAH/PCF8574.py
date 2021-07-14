@@ -22,7 +22,7 @@ class PCF8574:
 
   def portWrite(self, value):
 
-    if portWrite < 0 or portWrite > 255:
+    if value < 0 or value > 255:
       raise ValueError('PCF8574 says: Invalid portWrite value (' + str(value) + ')! Options are 0-255')
 
     self.bus.write_byte(self.address, value)
