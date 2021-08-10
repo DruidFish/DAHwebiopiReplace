@@ -51,7 +51,7 @@ class MCP23S17:
 
     return 16
 
-  def rawIO( a, b, c ):
+  def rawIO(self, a, b, c):
 
     # Activate chip select
     GPIO.output(self.cs, GPIO.LOW)
@@ -82,13 +82,13 @@ class MCP23S17:
 
       raise ValueError('MCP23S17 says: Invalid channel chosen (' + str(channel) + ')! Options are 0-15')
 
-    else if channel < 8:
+    elif channel < 8:
 
-      return self.portReadA() && ( 1 << channel )
+      return self.portReadA() & ( 1 << channel )
 
     else:
 
-      return self.portReadB() && ( 1 << (channel-8) )
+      return self.portReadB() & ( 1 << (channel-8) )
 
   def portWriteA(self, value):
 
@@ -100,8 +100,8 @@ class MCP23S17:
 
   def portWrite(self, value):
 
-    self.portWriteA( value && 0xFF )
-    self.portWriteB( ( value >> 8 ) && 0xFF )
+    self.portWriteA( value & 0xFF )
+    self.portWriteB( ( value >> 8 ) & 0xFF )
 
   def digitalWrite(self, channel, value):
 
@@ -109,7 +109,7 @@ class MCP23S17:
 
       raise ValueError('MCP23S17 says: Invalid channel chosen (' + str(channel) + ')! Options are 0-15')
 
-    else if channel < 8:
+    elif channel < 8:
 
       # Get current state
       currentState = self.portReadA()
@@ -159,7 +159,7 @@ class MCP23S17:
 
       raise ValueError('MCP23S17 says: Invalid channel chosen (' + str(channel) + ')! Options are 0-15')
 
-    else if channel < 8:
+    elif channel < 8:
 
       # Get current state
       currentState = self.getModeA()
