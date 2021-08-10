@@ -25,16 +25,14 @@ class MCP3208:
     #self.spi.cshigh = False
 
     # Use the GPIO library for chip select
-    if chip == 0:
-      self.cs = 8
-    elif chip == 1:
-      self.cs = 7
-    else:
-      raise ValueError('MCP3208 says: Invalid chip chosen (' + str(chip) + ')! Options are 0 or 1')
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(self.cs, GPIO.OUT)
-    GPIO.output(self.cs, 1)
+    if chip == 0:
+      self.setCS( 8 )
+    elif chip == 1:
+      self.setCS( 7 )
+    else:
+      raise ValueError('MCP3208 says: Invalid chip chosen (' + str(chip) + ')! Options are 0 or 1')
 
   def __del__(self):
 
@@ -47,7 +45,7 @@ class MCP3208:
 
     self.cs = cs
     GPIO.setup(self.cs, GPIO.OUT)
-    GPIO.output(self.cs, 1)
+    GPIO.output(self.cs, GPIO.HIGH)
 
   def analogCount(self):
 
@@ -75,13 +73,13 @@ class MCP3208:
     cmd += ((channel & 0x07) << 3)
 
     # Activate chip select
-    GPIO.output(self.cs, 0)
+    GPIO.output(self.cs, GPIO.LOW)
 
     # Write command to MCP3208, read its response
     ret = self.spi.xfer2([cmd, 0x0, 0x0])
 
     # Deactivate chip select
-    GPIO.output(self.cs, 1)
+    GPIO.output(self.cs, GPIO.HIGH)
 
     # get the 12b out of the return
     val = (ret[0] & 0x01) << 11  # only B11 is here
@@ -102,7 +100,7 @@ class MCP3208:
 
     result = [0]*8
     for channel in range( self.analogCount() ):
-      result[ channel ] = analogRead( channel )
+      result[ channel ] = self.analogRead( channel )
 
     return result
 
@@ -110,7 +108,7 @@ class MCP3208:
 
     result = [0]*8
     for channel in range( self.analogCount() ):
-      result[ channel ] = analogReadFloat( channel )
+      result[ channel ] = self.analogReadFloat( channel )
 
     return result
 
@@ -118,7 +116,7 @@ class MCP3208:
 
     result = [0]*8
     for channel in range( self.analogCount() ):
-      result[ channel ] = analogReadVolt( channel )
+      result[ channel ] = self.analogReadVolt( channel )
 
     return result
 
