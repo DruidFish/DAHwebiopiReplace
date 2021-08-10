@@ -11,9 +11,13 @@ import smbus
 
 class PCF8574:
 
-  def __init__(self, address):
+  def __init__(self, address=0x38):
 
     self.bus = smbus.SMBus(1)
+
+    # 3 bits of address to work with, starting from 0x38
+    if address < 0x38 or address > 0x3F:
+      raise ValueError('PCF8574 says: Invalid address chosen ({:02X})! Options are 0x38-0x3F'.format(address))
     self.address = address
 
   def portRead(self):
