@@ -25,16 +25,14 @@ class MCP4922:
     #self.spi.cshigh = False
 
     # Use the GPIO library for chip select
-    if chip == 0:
-      self.cs = 8
-    elif chip == 1:
-      self.cs = 7
-    else:
-      raise ValueError('MCP4922 says: Invalid chip chosen (' + str(chip) + ')! Options are 0 or 1')
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(self.cs, GPIO.OUT)
-    GPIO.output(self.cs, 1)
+    if chip == 0:
+      self.setCS( 8 )
+    elif chip == 1:
+      self.setCS( 7 )
+    else:
+      raise ValueError('MCP4922 says: Invalid chip chosen (' + str(chip) + ')! Options are 0 or 1')
 
   def __del__(self):
 
@@ -45,11 +43,11 @@ class MCP4922:
   def setCS(self, cs):
 
     if cs < 0 or cs > 27:
-      raise ValueError('MCP3208 says: Invalid CS chosen (' + str(cs) + ')! Options are 0-27')
+      raise ValueError('MCP4922 says: Invalid CS chosen (' + str(cs) + ')! Options are 0-27')
 
     self.cs = cs
     GPIO.setup(self.cs, GPIO.OUT)
-    GPIO.output(self.cs, 1)
+    GPIO.output(self.cs, GPIO.HIGH)
 
   def analogCount(self):
 
@@ -86,13 +84,13 @@ class MCP4922:
     buf1 = output & 0xff
 
     # Activate chip select
-    GPIO.output(self.cs, 0)
+    GPIO.output(self.cs, GPIO.LOW)
 
     # Write command to MCP4922
     self.spi.writebytes([buf0, buf1])
 
     # Deactivate chip select
-    GPIO.output(self.cs, 1)
+    GPIO.output(self.cs, GPIO.HIGH)
 
   def analogWriteFloat(self, channel, value):
 
@@ -115,13 +113,13 @@ class MCP4922:
     buf1 = output & 0xff
 
     # Activate chip select
-    GPIO.output(self.cs, 0)
+    GPIO.output(self.cs, GPIO.LOW)
 
     # Write command to MCP4922
     self.spi.writebytes([buf0, buf1])
 
     # Deactivate chip select
-    GPIO.output(self.cs, 1)
+    GPIO.output(self.cs, GPIO.HIGH)
 
   def close(self):
 
