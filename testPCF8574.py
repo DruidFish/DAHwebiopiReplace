@@ -16,7 +16,7 @@ for flash in range( 10 ):
   time.sleep( 0.5 )
 
 # Light each pin in sequence
-for pin in range( 0, 16 ):
+for pin in range( 0, 8 ):
   pcf.digitalWrite( pin, 1 )
   time.sleep( 0.5 )
 

@@ -1,4 +1,4 @@
-from DAH import MCP3208 MCP4922
+from DAH import MCP3208, MCP4922
 import time
 
 # Define ADC on Chip Enable 0 (CE0/GPIO8)
