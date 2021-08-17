@@ -16,6 +16,7 @@ class MCP3208:
 
     # Reference voltage
     self.vref = vref
+    self.printRawData = False
 
     # Use the spidev library for communication
     self.spi = spidev.SpiDev(0, 1)
@@ -46,6 +47,10 @@ class MCP3208:
     self.cs = cs
     GPIO.setup(self.cs, GPIO.OUT)
     GPIO.output(self.cs, GPIO.HIGH)
+
+  def printRawData(self, value):
+
+    self.printRawData = value
 
   def analogCount(self):
 
@@ -80,6 +85,10 @@ class MCP3208:
 
     # Deactivate chip select
     GPIO.output(self.cs, GPIO.HIGH)
+
+    if self.printRawData:
+      print( "to MCP3208: " + str( [cmd, 0x0, 0x0] ) )
+      print( "from MCP3208: " + str( ret ) )
 
     # get the 12b out of the return
     val = (ret[0] & 0x01) << 11  # only B11 is here

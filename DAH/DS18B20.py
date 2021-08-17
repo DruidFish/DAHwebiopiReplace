@@ -12,9 +12,14 @@ class DS18B20:
   def __init__(self, address):
 
     self.path = os.path.join( "/sys/bus/w1/devices", address, "w1_slave" )
+    self.printRawData = False
 
     if not os.path.exists( self.path ):
       raise FileNotFoundError( "DS18B20 says: could not find sensor with address " + str(address) )
+
+  def printRawData(self, value):
+
+    self.printRawData = value
 
   def getCelsius(self):
 
@@ -22,8 +27,12 @@ class DS18B20:
     inputFile = open( self.path, "r" )
 
     # The file is two lines long, and we only care about the last one
-    inputFile.readline()
+    lineOne = inputFile.readline()
     inputData = inputFile.readline()
+
+    if self.printRawData:
+      print( "from DS18B20: " + lineOne.strip('\n') )
+      print( "from DS18B20: " + inputData.strip('\n') )
 
     # The last 5 characters of the line contain the temperature information
     inputData = inputData[ len( inputData ) - 6 : ]

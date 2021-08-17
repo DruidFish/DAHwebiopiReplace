@@ -16,6 +16,7 @@ class MCP4922:
 
     # Reference voltage
     self.vref = vref
+    self.printRawData = False
 
     # Use the spidev library for communication
     self.spi = spidev.SpiDev(0, 1)
@@ -48,6 +49,10 @@ class MCP4922:
     self.cs = cs
     GPIO.setup(self.cs, GPIO.OUT)
     GPIO.output(self.cs, GPIO.HIGH)
+
+  def printRawData(self, value):
+
+    self.printRawData = value
 
   def analogCount(self):
 
@@ -92,6 +97,9 @@ class MCP4922:
     # Deactivate chip select
     GPIO.output(self.cs, GPIO.HIGH)
 
+    if self.printRawData:
+      print( "to MCP4922: " + str( [buf0, buf1] ) )
+
   def analogWriteFloat(self, channel, value):
 
     self.analogWrite( channel, int( value * float( self.analogMaximum() ) ) )
@@ -120,6 +128,9 @@ class MCP4922:
 
     # Deactivate chip select
     GPIO.output(self.cs, GPIO.HIGH)
+
+    if self.printRawData:
+      print( "to MCP4922: " + str( [buf0, buf1] ) )
 
   def close(self):
 
