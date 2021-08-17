@@ -16,7 +16,7 @@ class MCP3208:
 
     # Reference voltage
     self.vref = vref
-    self.printRawData = False
+    self.doPrint = False
 
     # Use the spidev library for communication
     self.spi = spidev.SpiDev(0, 1)
@@ -50,7 +50,7 @@ class MCP3208:
 
   def printRawData(self, value):
 
-    self.printRawData = value
+    self.doPrint = value
 
   def analogCount(self):
 
@@ -86,7 +86,7 @@ class MCP3208:
     # Deactivate chip select
     GPIO.output(self.cs, GPIO.HIGH)
 
-    if self.printRawData:
+    if self.doPrint:
       print( "to MCP3208: " + str( [cmd, 0x0, 0x0] ) )
       print( "from MCP3208: " + str( ret ) )
 

@@ -14,7 +14,7 @@ class PCF8574:
   def __init__(self, address=0x38):
 
     self.bus = smbus.SMBus(1)
-    self.printRawData = False
+    self.doPrint = False
 
     # 3 bits of address to work with, starting from 0x38
     if address < 0x38 or address > 0x3F:
@@ -23,13 +23,13 @@ class PCF8574:
 
   def printRawData(self, value):
 
-    self.printRawData = value
+    self.doPrint = value
 
   def portRead(self):
 
     data = self.bus.read_byte(self.address)
 
-    if self.printRawData:
+    if self.doPrint:
       print( "from PCF8574: " + str( data ) )
 
     return data
@@ -39,7 +39,7 @@ class PCF8574:
     if value < 0 or value > 255:
       raise ValueError('PCF8574 says: Invalid portWrite value (' + str(value) + ')! Options are 0-255')
 
-    if self.printRawData:
+    if self.doPrint:
       print( "to PCF8574: " + str( value ) )
 
     self.bus.write_byte(self.address, value)

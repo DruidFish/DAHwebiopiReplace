@@ -16,7 +16,7 @@ class MCP23S17:
     if address < 0x20 or address > 0x27:
       raise ValueError('MCP23S17 says: Invalid device ID chosen ({:02X})! Options are 0x20-0x27'.format(address))
     self.address = address
-    self.printRawData = False
+    self.doPrint = False
 
     # Use the spidev library for communication
     self.spi = spidev.SpiDev(0, 1)
@@ -50,7 +50,7 @@ class MCP23S17:
 
   def printRawData(self, value):
 
-    self.printRawData = value
+    self.doPrint = value
 
   def digitalCount(self):
 
@@ -67,7 +67,7 @@ class MCP23S17:
     # Deactivate chip select
     GPIO.output(self.cs, GPIO.HIGH)
 
-    if self.printRawData:
+    if self.doPrint:
       print( "to MCP23S17: " + str( [a, b, c] ) )
       print( "from MCP23S17: " + str( data ) )
 
@@ -144,7 +144,7 @@ class MCP23S17:
       if value:
         newState += ( 1 << (channel-8) )
 
-      self.portWriteA( newState )
+      self.portWriteB( newState )
 
   def getModeA(self):
 
