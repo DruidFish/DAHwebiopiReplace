@@ -11,8 +11,10 @@ import spidev
 import RPi.GPIO as GPIO
 
 class MCP3208:
+  """Python Library for MCP3208 ADC using Raspberry Pi 3 Model B+"""
 
   def __init__(self, chip=0, vref=3.3):
+    """Initialise MCP3208 with an SPI chip number (0 or 1) and reference voltage"""
 
     # Reference voltage
     self.vref = vref
@@ -40,6 +42,7 @@ class MCP3208:
     self.close()
 
   def setCS(self, cs):
+    """Set a custom GPIO pin to use as chip select"""
 
     if cs < 0 or cs > 27:
       raise ValueError('MCP3208 says: Invalid CS chosen (' + str(cs) + ')! Options are 0-27')
@@ -49,26 +52,32 @@ class MCP3208:
     GPIO.output(self.cs, GPIO.HIGH)
 
   def printRawData(self, value):
+    """Display all binary communication to and from the MCP3208"""
 
     self.doPrint = value
 
   def analogCount(self):
+    """Return the number of ADC input pins"""
 
     return 8
 
   def analogResolution(self):
+    """Return the ADC resolution"""
 
     return 12
 
   def analogMaximum(self):
+    """Return the maximum value for an ADC measurement"""
 
     return 4095
 
   def analogReference(self):
+    """Return the configured reference voltage"""
 
     return self.vref
 
   def analogRead(self, channel):
+    """Make a single ADC measurement for a specific input pin (expressed as integer)"""
 
     if channel > 7 or channel < 0:
       raise ValueError('MCP3208 says: Invalid channel chosen (' + str(channel) +')! Options are 0-7')
@@ -98,14 +107,17 @@ class MCP3208:
     return (val & 0x0FFF)  # ensure we are only sending 12b
 
   def analogReadFloat(self, channel):
+    """Make a single ADC measurement for a specific input pin (expressed as float)"""
 
     return float( self.analogRead( channel ) ) / float( self.analogMaximum() )
 
   def analogReadVolt(self, channel):
+    """Make a single ADC measurement for a specific input pin (expressed as voltage)"""
 
     return self.vref * self.analogReadFloat( channel )
 
   def analogReadAll(self):
+    """Make an ADC measurement for every input pin (expressed as integer)"""
 
     result = [0]*8
     for channel in range( self.analogCount() ):
@@ -114,6 +126,7 @@ class MCP3208:
     return result
 
   def analogReadAllFloat(self):
+    """Make an ADC measurement for every input pin (expressed as float)"""
 
     result = [0]*8
     for channel in range( self.analogCount() ):
@@ -122,6 +135,7 @@ class MCP3208:
     return result
 
   def analogReadAllVolt(self):
+    """Make an ADC measurement for every input pin (expressed as voltage)"""
 
     result = [0]*8
     for channel in range( self.analogCount() ):
@@ -130,6 +144,7 @@ class MCP3208:
     return result
 
   def close(self):
+    """Disconnect communication with the MCP3208"""
 
     self.spi.close()
 
