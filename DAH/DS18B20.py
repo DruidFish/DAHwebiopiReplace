@@ -8,8 +8,10 @@ Version for Edinburgh DAH course, replacing webiopi library
 import os.path
 
 class DS18B20:
+  """Python Library for DS18B20 temperature sensor using Raspberry Pi 3 Model B+"""
 
   def __init__(self, address):
+    """Initialise DS18B20 with a 1-wire address"""
 
     self.path = os.path.join( "/sys/bus/w1/devices", address, "w1_slave" )
     self.doPrint = False
@@ -18,10 +20,12 @@ class DS18B20:
       raise FileNotFoundError( "DS18B20 says: could not find sensor with address " + str(address) )
 
   def printRawData(self, value):
+    """Display all raw data from the DS18B20"""
 
     self.doPrint = value
 
   def getCelsius(self):
+    """Return the measured temperature in Celsius"""
 
     # Load the raw temperature data
     inputFile = open( self.path, "r" )
