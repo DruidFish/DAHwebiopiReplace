@@ -23,7 +23,7 @@ class PCF8574:
       raise ValueError('PCF8574 says: Invalid address chosen ({:02X})! Options are 0x38-0x3F'.format(address))
     self.address = address
 
-  def printRawData(self, value):i
+  def printRawData(self, value):
     """Display all binary communication to and from the PCF8574"""
 
     self.doPrint = value
