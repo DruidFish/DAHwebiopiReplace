@@ -13,12 +13,13 @@ import RPi.GPIO as GPIO
 class MCP4922:
   """Python Library for MCP4922 ADC using Raspberry Pi 3 Model B+"""
 
-  def __init__(self, chip=1, vref=3.3):
+  def __init__(self, chip=1, vref=3.3, autoShutdown=False):
     """Initialise MCP4922 with an SPI chip number (0 or 1) and reference voltage"""
 
-    # Reference voltage
+    # Configuration
     self.vref = vref
     self.doPrint = False
+    self.autoShutdown = autoShutdown
 
     # Use the spidev library for communication
     self.spi = spidev.SpiDev(0, 1)
@@ -39,8 +40,9 @@ class MCP4922:
 
   def __del__(self):
 
-    self.shutdown(0)
-    self.shutdown(1)
+    if self.autoShutdown:
+      self.shutdown(0)
+      self.shutdown(1)
     self.close()
 
   def setCS(self, cs):
