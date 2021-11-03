@@ -103,11 +103,11 @@ class MCP23S17:
 
     elif channel < 8:
 
-      return self.portReadA() & ( 1 << channel )
+      return bool( self.portReadA() & ( 1 << channel ) )
 
     else:
 
-      return self.portReadB() & ( 1 << (channel-8) )
+      return bool( self.portReadB() & ( 1 << (channel-8) ) )
 
   def portWriteA(self, value):
     """Write to all bank A pins simultaneously, one binary bit per pin"""

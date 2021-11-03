@@ -78,4 +78,4 @@ class PCF8574:
     channelState = currentState & ( 1 << channel )
 
     # Return a boolean
-    return ( channelState > 0 )
+    return bool( channelState )
