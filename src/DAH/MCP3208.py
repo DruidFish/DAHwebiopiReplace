@@ -1,5 +1,5 @@
 """
-Python Library for MCP3208 ADC using Raspberry Pi 3 Model B+
+Python Library for MCP3208 ADC using Raspberry Pi 5
 
 Version for Edinburgh DAH course, replacing webiopi library
 
@@ -8,10 +8,9 @@ Based on https://github.com/MomsFriendlyRobotCompany/mcp3208
 """
 
 import spidev
-import RPi.GPIO as GPIO
 
 class MCP3208:
-  """Python Library for MCP3208 ADC using Raspberry Pi 3 Model B+"""
+  """Python Library for MCP3208 ADC using Raspberry Pi 5"""
 
   def __init__(self, chip=0, vref=3.3):
     """Initialise MCP3208 with an SPI chip number (0 or 1) and reference voltage"""
@@ -21,35 +20,17 @@ class MCP3208:
     self.doPrint = False
 
     # Use the spidev library for communication
-    self.spi = spidev.SpiDev(0, 1)
+    if chip not in [0,1]:
+      raise ValueError('MCP3208 says: Invalid chip chosen (' + str(chip) + ')! Options are 0 or 1')
+    self.spi = spidev.SpiDev(0, chip)
     self.spi.max_speed_hz=1000000
     self.spi.mode = 0
     self.spi.lsbfirst = False
     #self.spi.cshigh = False
 
-    # Use the GPIO library for chip select
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-    if chip == 0:
-      self.setCS( 8 )
-    elif chip == 1:
-      self.setCS( 7 )
-    else:
-      raise ValueError('MCP3208 says: Invalid chip chosen (' + str(chip) + ')! Options are 0 or 1')
-
   def __del__(self):
 
     self.close()
-
-  def setCS(self, cs):
-    """Set a custom GPIO pin to use as chip select"""
-
-    if cs < 0 or cs > 27:
-      raise ValueError('MCP3208 says: Invalid CS chosen (' + str(cs) + ')! Options are 0-27')
-
-    self.cs = cs
-    GPIO.setup(self.cs, GPIO.OUT)
-    GPIO.output(self.cs, GPIO.HIGH)
 
   def printRawData(self, value):
     """Display all binary communication to and from the MCP3208"""
@@ -86,14 +67,8 @@ class MCP3208:
     cmd += 64  # 1100 0000
     cmd += ((channel & 0x07) << 3)
 
-    # Activate chip select
-    GPIO.output(self.cs, GPIO.LOW)
-
     # Write command to MCP3208, read its response
     ret = self.spi.xfer2([cmd, 0x0, 0x0])
-
-    # Deactivate chip select
-    GPIO.output(self.cs, GPIO.HIGH)
 
     if self.doPrint:
       print( "to MCP3208: " + str( [cmd, 0x0, 0x0] ) )
